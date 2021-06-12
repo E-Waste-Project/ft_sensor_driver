@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="ft_sensor_driver" type="ft_sensor_driver.py" name="ft_sensor_driver">
+        <!-- <remap from="/ft_sensor_wrench/wrench/raw" to="/egm/compliance_controller/ft_sensor_wrench"/> -->
+        <remap from="/ft_sensor_wrench/wrench/raw" to="/egm/force_controller/ft_sensor_wrench"/>
+    </node>
+        
+</launch>

@@ -29,7 +29,6 @@ rospy.sleep(1)
 
 with nidaqmx.Task() as task:
     task.ai_channels.add_ai_voltage_chan("Dev1/ai0:5")
-    
     data = task.read(number_of_samples_per_channel=bias_num_samples, timeout=bias_timeout)
     bias_arr = np.array(data)
     bias_mean = np.mean(bias_arr, axis=1)
@@ -48,8 +47,9 @@ with nidaqmx.Task() as task:
             wrench = np.matmul(transformation_matrix, biased_data)
             
             # Publish the force data           
-            wrench_msg.header.frame_id = 'tool0'
-            wrench_msg.header.seq += 1
+            # wrench_msg.header.frame_id = 'ft_sensor'
+            wrench_msg.header.frame_id = 'ft_sensor_link'
+            # wrench_msg.header.seq += 1
             wrench_msg.header.stamp = rospy.Time.now()
             wrench_msg.wrench.force.x = wrench[0]
             wrench_msg.wrench.force.y = wrench[1]
@@ -58,9 +58,8 @@ with nidaqmx.Task() as task:
             wrench_msg.wrench.torque.y = wrench[4]
             wrench_msg.wrench.torque.z = wrench[5]
             wrench_pub.publish(wrench_msg)
-            
             # print the force data
-            print (wrench_msg)
+            # print (wrench_msg)
             
             # calculate force resultant
             res = np.sqrt(wrench[0]**2 + wrench[1]**2)

@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<launch>
+    <node pkg="ft_sensor_driver" type="ft_sensor_driver.py" name="ft_sensor_driver"/>
+    <node pkg="ft_sensor_driver" type="lp_filter.py" name="lp_filter" />
+</launch>
