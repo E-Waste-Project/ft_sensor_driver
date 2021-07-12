@@ -20,11 +20,10 @@ transformation_matrix = np.array([[-0.023653656180277, 0.013498529819632, 0.2193
 
 bias_num_samples = 10000
 bias_timeout = 10
+publish_rate = 250 # hz
 
 rospy.init_node("ft_sensor")
 wrench_pub = rospy.Publisher("ft_sensor_wrench/wrench/raw", WrenchStamped, queue_size=1)
-res_pub = rospy.Publisher("ft_sensor_wrench/resultant/raw", Float64, queue_size=1)
-
 rospy.sleep(1)
 
 with nidaqmx.Task() as task:
@@ -33,7 +32,7 @@ with nidaqmx.Task() as task:
     bias_arr = np.array(data)
     bias_mean = np.mean(bias_arr, axis=1)
     wrench_msg = WrenchStamped()
-    wrench_msg.header.seq = -1
+    rate = rospy.Rate(publish_rate)
 
     try:
         while not rospy.is_shutdown():
@@ -47,9 +46,7 @@ with nidaqmx.Task() as task:
             wrench = np.matmul(transformation_matrix, biased_data)
             
             # Publish the force data           
-            # wrench_msg.header.frame_id = 'ft_sensor'
             wrench_msg.header.frame_id = 'ft_sensor_link'
-            # wrench_msg.header.seq += 1
             wrench_msg.header.stamp = rospy.Time.now()
             wrench_msg.wrench.force.x = wrench[0]
             wrench_msg.wrench.force.y = wrench[1]
@@ -60,12 +57,7 @@ with nidaqmx.Task() as task:
             wrench_pub.publish(wrench_msg)
             # print the force data
             # print (wrench_msg)
-            
-            # calculate force resultant
-            res = np.sqrt(wrench[0]**2 + wrench[1]**2)
-            # res = np.sqrt(wrench[0]**2 )
-            res_msg = Float64(data=res)
-            res_pub.publish(res_msg)
+            rate.sleep()
                 
     except rospy.ROSInterruptException:
         pass
