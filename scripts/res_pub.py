@@ -3,7 +3,7 @@ import rospy
 import numpy as np
 from geometry_msgs.msg import WrenchStamped, Wrench
 from std_msgs.msg import Float64
-
+from math import fabs
 
 def res_cb(msg):
     # get the forces
@@ -11,25 +11,48 @@ def res_cb(msg):
     fy = msg.wrench.force.y
     fz = msg.wrench.force.z
     
+    tx = msg.wrench.torque.x
+    ty = msg.wrench.torque.y
+    tz = msg.wrench.torque.z
+    
     # calculate the resultants
-    res_xy = np.sqrt(fx**2 + fy**2)
-    res_yz = np.sqrt(fy**2 + fz**2)
-    res_xz = np.sqrt(fx**2 + fz**2)
+    f_res_xy = np.sqrt(fx**2 + fy**2)
+    f_res_yz = np.sqrt(fy**2 + fz**2)
+    f_res_xz = np.sqrt(fx**2 + fz**2)
+    
+    t_res_xy = np.sqrt(tx**2 + ty**2)
+    t_res_yz = np.sqrt(ty**2 + tz**2)
+    t_res_xz = np.sqrt(tx**2 + tz**2)
     
     # resultant messages
-    res_xy_msg = Float64(data=res_xy)
-    res_yz_msg = Float64(data=res_yz)
-    res_xz_msg = Float64(data=res_xz)
+    f_res_xy_msg = Float64(data=f_res_xy)
+    f_res_yz_msg = Float64(data=f_res_yz)
+    f_res_xz_msg = Float64(data=f_res_xz)
+    
+    t_res_xy_msg = Float64(data=t_res_xy)
+    t_res_yz_msg = Float64(data=t_res_yz)
+    t_res_xz_msg = Float64(data=t_res_xz)
+
 
     # publish resultant messages
-    res_xy_pub.publish(res_xy_msg)
-    res_yz_pub.publish(res_yz_msg)
-    res_xz_pub.publish(res_xz_msg)
-
+    f_res_xy_pub.publish(f_res_xy_msg)
+    f_res_yz_pub.publish(f_res_yz_msg)
+    f_res_xz_pub.publish(f_res_xz_msg)
+    
+    t_res_xy_pub.publish(t_res_xy_msg)
+    t_res_yz_pub.publish(t_res_yz_msg)
+    t_res_xz_pub.publish(t_res_xz_msg)
+    
+    # arm_depth_msg = Float64(data=fabs(ty/fz) * 10)
+    # arm_depth_pub.publish(arm_depth_msg)
 
 rospy.init_node("res_pub")
 rospy.Subscriber("ft_sensor_wrench/wrench/filtered", WrenchStamped, res_cb)
-res_xy_pub = rospy.Publisher("ft_sensor_wrench/resultant/filtered/xy", Float64, queue_size=1)
-res_yz_pub = rospy.Publisher("ft_sensor_wrench/resultant/filtered/yz", Float64, queue_size=1)
-res_xz_pub = rospy.Publisher("ft_sensor_wrench/resultant/filtered/xz", Float64, queue_size=1)
+f_res_xy_pub = rospy.Publisher("ft_sensor_wrench/resultant/filtered/xy", Float64, queue_size=1)
+f_res_yz_pub = rospy.Publisher("ft_sensor_wrench/resultant/filtered/yz", Float64, queue_size=1)
+f_res_xz_pub = rospy.Publisher("ft_sensor_wrench/resultant/filtered/xz", Float64, queue_size=1)
+t_res_xy_pub = rospy.Publisher("ft_sensor_wrench/resultant/filtered/torque/xy", Float64, queue_size=1)
+t_res_yz_pub = rospy.Publisher("ft_sensor_wrench/resultant/filtered/torque/yz", Float64, queue_size=1)
+t_res_xz_pub = rospy.Publisher("ft_sensor_wrench/resultant/filtered/torque/xz", Float64, queue_size=1)
+arm_depth_pub = rospy.Publisher("ft_sensor_wrench/arm_depth", Float64, queue_size=1)
 rospy.spin()

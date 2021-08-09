@@ -20,7 +20,7 @@ transformation_matrix = np.array([[-0.023653656180277, 0.013498529819632, 0.2193
 
 bias_num_samples = 10000
 bias_timeout = 10
-publish_rate = 250 # hz
+publish_rate = 250.0 # hz
 
 rospy.init_node("ft_sensor")
 wrench_pub = rospy.Publisher("ft_sensor_wrench/wrench/raw", WrenchStamped, queue_size=1)
