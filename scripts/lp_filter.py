@@ -1,13 +1,7 @@
 #!/usr/bin/env python
 import rospy
-import numpy as np
 from geometry_msgs.msg import WrenchStamped, Wrench
-from geometry_msgs.msg import PointStamped
-from std_msgs.msg import Float64
 from scipy.signal import butter, sosfilt, sosfilt_zi
-from collections import deque
-from ros_numpy import numpify
-import matplotlib.pyplot as plt
 
 
 sampling_rate = 250
