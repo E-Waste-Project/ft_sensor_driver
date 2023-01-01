@@ -58,6 +58,6 @@ def butter_lowpass_filter(data, cutoff, fs, z, order=2):
     return y, zf
 
 rospy.init_node("ft_lpr")
-rospy.Subscriber("/wrench", WrenchStamped, raw_wrench_sub)
-filtered_pub = rospy.Publisher("/wrench/filtered", WrenchStamped, queue_size=1)
+rospy.Subscriber("ft_sensor_wrench/wrench/raw", WrenchStamped, raw_wrench_sub)
+filtered_pub = rospy.Publisher("ft_sensor_wrench/wrench/filtered", WrenchStamped, queue_size=1)
 rospy.spin()
